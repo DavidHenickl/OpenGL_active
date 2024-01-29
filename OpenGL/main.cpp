@@ -194,7 +194,10 @@ int main()
 	Shader shaderProgram3("default.vert", "default.frag");
 	Shader shaderProgram4("default.vert", "default.frag");
 	Shader shaderProgram5("default.vert", "default.frag");
+	Shader shaderProgramRotate("default.vert", "default.frag");
 	Shader shaderProgramCube("default.vert", "default.frag");
+	Shader shaderProgramCube2("default.vert", "default.frag");
+	Shader shaderProgramCube3("default.vert", "default.frag");
 	Shader shaderProgramPlane("default.vert", "default.frag");
 	// Generates Vertex Array Object and binds it
 	VAO VAO1;
@@ -254,14 +257,16 @@ int main()
 	lightVBO.Unbind();
 	lightEBO.Unbind();
 
+	// Gets ID of uniform called "scale"
+	GLuint uniID = glGetUniformLocation(shaderProgramRotate.ID, "scale");
 
 
 	glm::vec4 lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	glm::vec3 lightPos = glm::vec3(0.5f, 0.5f, 0.5f);
+	glm::vec3 lightPos = glm::vec3(0.5f, 1.5f, 0.5f);
 	glm::mat4 lightModel = glm::mat4(1.0f);
 	lightModel = glm::translate(lightModel, lightPos);
 
-	glm::vec3 pyramidPos = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 pyramidPos = glm::vec3(2.0f, 0.0f, 2.0f);
 	glm::mat4 pyramidModel = glm::mat4(1.0f);
 	pyramidModel = glm::translate(pyramidModel, pyramidPos);
 
@@ -281,9 +286,21 @@ int main()
 	glm::mat4 pyramidModel5 = glm::mat4(1.0f);
 	pyramidModel5 = glm::translate(pyramidModel5, pyramidPos5);
 
+	glm::vec3 pyramidPos6 = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::mat4 pyramidModel6 = glm::mat4(1.0f);
+	pyramidModel6 = glm::translate(pyramidModel6, pyramidPos6);
+	
 	glm::vec3 cubePos = glm::vec3(0.0f, 0.0f, -4.0f);
 	glm::mat4 cubeModel = glm::mat4(1.0f);
 	cubeModel = glm::translate(cubeModel, cubePos);
+
+	glm::vec3 cubePos2 = glm::vec3(2.0f, 0.0f, -2.0f);
+	glm::mat4 cubeModel2 = glm::mat4(1.0f);
+	cubeModel2 = glm::translate(cubeModel2, cubePos2);
+
+	glm::vec3 cubePos3 = glm::vec3(-2.0f, 0.0f, -2.0f);
+	glm::mat4 cubeModel3 = glm::mat4(1.0f);
+	cubeModel3 = glm::translate(cubeModel3, cubePos3);
 
 	glm::vec3 planePos = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::mat4 planeModel = glm::mat4(3.0f);
@@ -313,10 +330,22 @@ int main()
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgram5.ID, "model"), 1, GL_FALSE, glm::value_ptr(pyramidModel5));
 	glUniform4f(glGetUniformLocation(shaderProgram5.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
 	glUniform3f(glGetUniformLocation(shaderProgram5.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
+	shaderProgramRotate.Activate();
+	glUniformMatrix4fv(glGetUniformLocation(shaderProgramRotate.ID, "model"), 1, GL_FALSE, glm::value_ptr(pyramidModel6));
+	glUniform4f(glGetUniformLocation(shaderProgramRotate.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
+	glUniform3f(glGetUniformLocation(shaderProgramRotate.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
 	shaderProgramCube.Activate();
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgramCube.ID, "model"), 1, GL_FALSE, glm::value_ptr(cubeModel));
 	glUniform4f(glGetUniformLocation(shaderProgramCube.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
 	glUniform3f(glGetUniformLocation(shaderProgramCube.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
+	shaderProgramCube2.Activate();
+	glUniformMatrix4fv(glGetUniformLocation(shaderProgramCube2.ID, "model"), 1, GL_FALSE, glm::value_ptr(cubeModel2));
+	glUniform4f(glGetUniformLocation(shaderProgramCube2.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
+	glUniform3f(glGetUniformLocation(shaderProgramCube2.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
+	shaderProgramCube3.Activate();
+	glUniformMatrix4fv(glGetUniformLocation(shaderProgramCube3.ID, "model"), 1, GL_FALSE, glm::value_ptr(cubeModel3));
+	glUniform4f(glGetUniformLocation(shaderProgramCube3.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
+	glUniform3f(glGetUniformLocation(shaderProgramCube3.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
 	shaderProgramPlane.Activate();
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgramPlane.ID, "model"), 1, GL_FALSE, glm::value_ptr(planeModel));
 	glUniform4f(glGetUniformLocation(shaderProgramPlane.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
@@ -340,7 +369,8 @@ int main()
 	/*Texture brickTex("brick.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
 	brickTex.texUnit(shaderProgram, "tex0", 0);*/
 
-
+	float rotation = 0.0f;
+	double prevTime = glfwGetTime();
 
 	// Enables the Depth Buffer
 	glEnable(GL_DEPTH_TEST);
@@ -360,7 +390,6 @@ int main()
 		camera.Inputs(window);
 		// Updates and exports the camera matrix to the Vertex Shader
 		camera.updateMatrix(45.0f, 0.1f, 100.0f);
-
 
 		// Tells OpenGL which Shader Program we want to use
 		shaderProgram.Activate();
@@ -410,6 +439,20 @@ int main()
 		VAO2.Bind();
 		glDrawElements(GL_TRIANGLES, sizeof(CubeIndices) / sizeof(int), GL_UNSIGNED_INT, 0);
 
+		shaderProgramCube2.Activate();
+		glUniform3f(glGetUniformLocation(shaderProgramCube2.ID, "camPos"), camera.Position.x, camera.Position.y, camera.Position.z);
+		camera.Matrix(shaderProgramCube2, "camMatrix");
+		brickTex.Bind();
+		VAO2.Bind();
+		glDrawElements(GL_TRIANGLES, sizeof(CubeIndices) / sizeof(int), GL_UNSIGNED_INT, 0);
+
+		shaderProgramCube3.Activate();
+		glUniform3f(glGetUniformLocation(shaderProgramCube3.ID, "camPos"), camera.Position.x, camera.Position.y, camera.Position.z);
+		camera.Matrix(shaderProgramCube3, "camMatrix");
+		brickTex.Bind();
+		VAO2.Bind();
+		glDrawElements(GL_TRIANGLES, sizeof(CubeIndices) / sizeof(int), GL_UNSIGNED_INT, 0);
+
 		shaderProgramPlane.Activate();
 		glUniform3f(glGetUniformLocation(shaderProgramPlane.ID, "camPos"), camera.Position.x, camera.Position.y, camera.Position.z);
 		camera.Matrix(shaderProgramPlane, "camMatrix");
@@ -417,6 +460,47 @@ int main()
 		VAO3.Bind();
 		glDrawElements(GL_TRIANGLES, sizeof(PlaneIndices) / sizeof(int), GL_UNSIGNED_INT, 0);
 
+		shaderProgramRotate.Activate();
+		glUniform3f(glGetUniformLocation(shaderProgramRotate.ID, "camPos"), camera.Position.x, camera.Position.y, camera.Position.z);
+		camera.Matrix(shaderProgramRotate, "camMatrix");
+		brickTex.Bind();
+		VAO1.Bind();
+		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
+
+		// Simple timer
+		double crntTime = glfwGetTime();
+		if (crntTime - prevTime >= 1 / 60)
+		{
+			rotation += 0.5f;
+			prevTime = crntTime;
+		}
+
+		// Initializes matrices so they are not the null matrix
+		glm::mat4 model = glm::mat4(1.0f);
+		glm::mat4 view = glm::mat4(1.0f);
+		glm::mat4 proj = glm::mat4(1.0f);
+
+		// Assigns different transformations to each matrix
+		model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 1.0f, 0.0f));
+		view = glm::translate(view, glm::vec3(0.0f, -0.5f, -2.0f));
+		proj = glm::perspective(glm::radians(45.0f), (float)width / height, 0.1f, 100.0f);
+
+		// Outputs the matrices into the Vertex Shader
+		int modelLoc = glGetUniformLocation(shaderProgramRotate.ID, "model");
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		int viewLoc = glGetUniformLocation(shaderProgramRotate.ID, "view");
+		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+		int projLoc = glGetUniformLocation(shaderProgramRotate.ID, "proj");
+		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
+
+		// Assigns a value to the uniform; NOTE: Must always be done after activating the Shader Program
+		glUniform1f(uniID, 0.5f);
+		// Binds texture so that is appears in rendering
+		brickTex.Bind();
+		// Bind the VAO so OpenGL knows to use it
+		VAO1.Bind();
+		// Draw primitives, number of indices, datatype of indices, index of indices
+		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
 
 
 		// Tells OpenGL which Shader Program we want to use
@@ -449,6 +533,15 @@ int main()
 	EBO3.Delete();
 	brickTex.Delete();
 	shaderProgram.Delete();
+	shaderProgram2.Delete();
+	shaderProgram3.Delete();
+	shaderProgram4.Delete();
+	shaderProgram5.Delete();
+	shaderProgramRotate.Delete();
+	shaderProgramCube.Delete();
+	shaderProgramCube2.Delete();
+	shaderProgramCube3.Delete();
+	shaderProgramPlane.Delete();
 	lightVAO.Delete();
 	lightVBO.Delete();
 	lightEBO.Delete();
