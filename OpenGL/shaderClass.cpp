@@ -1,6 +1,6 @@
 #include"shaderClass.h"
 
-// Reads a text file and outputs a string with everything in the text file
+// Read a text file and outputs a string with everything in the text file
 std::string get_file_contents(const char* filename)
 {
 	std::ifstream in(filename, std::ios::binary);
@@ -17,7 +17,7 @@ std::string get_file_contents(const char* filename)
 	throw(errno);
 }
 
-// Constructor that build the Shader Program from 2 different shaders
+// Constructor (build the Shader Program from 2 different shaders)
 Shader::Shader(const char* vertexFile, const char* fragmentFile)
 {
 	// Read vertexFile and fragmentFile and store the strings
@@ -56,28 +56,28 @@ Shader::Shader(const char* vertexFile, const char* fragmentFile)
 	// Checks if Shaders linked succesfully
 	compileErrors(ID, "PROGRAM");
 
-	// Delete the now useless Vertex and Fragment Shader objects
+	// Delete Vertex and Fragment Shader objects
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
 }
 
-// Activates the Shader Program
+// Activate the Shader Program
 void Shader::Activate()
 {
 	glUseProgram(ID);
 }
 
-// Deletes the Shader Program
+// Delete the Shader Program
 void Shader::Delete()
 {
 	glDeleteProgram(ID);
 }
 
-// Checks if the different Shaders have compiled properly
+// Check if the different Shaders have compiled properly
 void Shader::compileErrors(unsigned int shader, const char* type)
 {
-	// Stores status of compilation
+	// Store status of compilation
 	GLint hasCompiled;
 	// Character array to store error message in
 	char infoLog[1024];
